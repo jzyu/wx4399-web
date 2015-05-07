@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}Flasky{% endblock %}
+
+{% block page_content %}
+  <div class="container">
+    <div class="col-md-2">
+      <h2>游戏图片</h2>
+    </div>
+
+    <div class="well col-md-8">
+      <ul class="nav nav-pills">
+        <li class="active"   id="nav_panel_1"><a href="#">基本信息</a></li>
+        <li role = "presentation" class="dropdown disabled" id="nav_panel_2">
+          <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="false">
+            奖项设置 <span class="caret"></span>
+          </a>
+          <ul class="dropdown-menu" role="menu">
+            <li><a href="#">分享设置</a></li>
+            <li><a href="#">素材替换</a></li>
+          </ul>
+        </li>
+        <li class="disabled" id="nav_panel_3"><a href="#">完成</a></li>
+      </ul>
+
+      <div class="view" id="panel_1">
+        <form method="post" class="form_1" role="form">
+          {{ form1.hidden_tag() }}
+          {{ wtf.form_errors(form1, hiddens="only") }}
+          {{ wtf.form_field(form1.name) }}
+          {{ wtf.form_field(form1.ts_start) }}
+          {{ wtf.form_field(form1.ts_end) }}
+          {{ wtf.form_field(form1.rule) }}
+          <a href="javascript:;" id="gotoStep2" type="button" class="btn btn-default">下一步</a>
+        </form>
+      </div>
+
+      <div class="view" id="panel_2" style="display: none;">
+        <form method="post" class="form_2" role="form">
+          {{ form2.hidden_tag() }}
+          {{ wtf.form_errors(form2, hiddens="only") }}
+          {{ wtf.form_field(form2.name) }}
+          {{ wtf.form_field(form2.count1) }}
+          {{ wtf.form_field(form2.count2) }}
+          {{ wtf.form_field(form2.count3) }}
+          <a href="javascript:;" id="gotoStep1" type="button" class="btn btn-default">上一步</a>
+          {{ wtf.form_field(form2.finish) }}
+        </form>
+      </div>
+
+    </div>
+  </div>
+
+{% endblock %}
+
+{% block scripts %}
+  {{ super() }}
+  <script type="text/javascript">
+    function changeView(panelId){
+      var $p1 = $(".view:visible");
+      var $p2 = $("#panel_"+panelId);
+      if($p1.is($p2)) return;
+
+      for (var i=1; i<=3; i++){
+        if (panelId === i) {
+          $("#nav_panel_" + i).removeClass('disabled').addClass('active');
+        } else {
+          $("#nav_panel_" + i).removeClass('active').addClass('disabled');
+        }
+      }
+
+      $p1.hide();
+      $p2.css("opacity","0").show().animate({opacity:1},300);
+    }
+
+    $(document).ready(function(){
+      $("#gotoStep1").click(function(){
+        changeView(1);
+      });
+
+      $("#gotoStep2").click(function(){
+        changeView(2);
+      });
+    });
+  </script>
+{% endblock %}

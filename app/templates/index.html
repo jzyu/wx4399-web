@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}Flasky{% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+    <h1>Hello, {% if current_user.is_authenticated() %}{{ current_user.name }}{% else %}Stranger{% endif %}!</h1>
+</div>
+<div class="row">
+    <div class="col-md-4">
+    <ul class="thumbnails">
+        <div class="thumbnail">
+            <img class="img-responsive" alt="300x200" src="{{ url_for('static', filename='img/game-catchstar.jpg') }}" />
+            <div class="caption" contenteditable="true">
+                <h3>数星星，做“超模”</h3>
+                <p>耶，你已奋斗了N个带星星的夜晚！</p>
+                <p><a class="btn btn-primary" href="#" id="create1">制作我的版本</a> <a class="btn" href="#">分享</a></p>
+            </div>
+        </div>
+    </ul>
+    </div>
+
+    <div class="col-md-4">
+        <ul class="thumbnails">
+            <div class="thumbnail">
+                <img  class="img-responsive" alt="300x200" src="{{ url_for('static', filename='img/game-firefly.png') }}" />
+                <div class="caption" contenteditable="true">
+                    <h3>一起来抓萤火虫</h3>
+                    <p>萤火虫回来了，他们等着你，一起飞舞，一起盘旋，一起玩耍</p>
+                    <p><a class="btn btn-primary" href="#" id="create2">制作我的版本</a> <a class="btn" href="#">分享</a></p>
+                </div>
+            </div>
+        </ul>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+  {{ super() }}
+  <script type="text/javascript">
+    $(document).ready(function(){
+      $("#create1").click(function(){
+        window.location.assign("{{ url_for('main.create') }}")
+      });
+
+      $("#create2").click(function(){
+        window.location.assign("{{ url_for('main.create') }}")
+      });
+    });
+  </script>
+{% endblock %}
