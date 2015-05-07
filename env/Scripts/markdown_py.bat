@@ -1,1 +1,0 @@
-@"D:\wx4399\site\work\wx4399\env\Scripts\python.exe" "D:\wx4399\site\work\wx4399\env\Scripts\markdown_py" %*
