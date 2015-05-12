@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block head %}
+  {{ super() }}
+  <link rel="stylesheet" href="{{ url_for('static', filename="css/bootstrap-datetimepicker.css") }}">
+{% endblock %}
+
+{% block page_content %}
+  <div class="container col-md-8 form-horizontal">
+    <div class="form-group">
+      {{ form.test_dtpicker.label(class_="col-md-2 control-label") }}
+      <div class="col-md-3 input-group">
+        {{ form.test_dtpicker(class_="form-control") }}
+        <span class="input-group-btn">
+          <button class="btn btn-default" type="button">
+            <span class="glyphicon glyphicon-calendar" id="datetimepicker"></span>
+          </button>
+        </span>
+
+      </div>
+    </div>
+
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  {{ super() }}
+  <script src="{{ url_for('static', filename='js/bootstrap-datetimepicker.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/bootstrap-datetimepicker.zh-CN.js') }}" charset="UTF-8"></script>
+
+  <script type="text/javascript">
+    $(document).ready(function() {
+      $('#datetimepicker').datetimepicker({
+        format: 'yyyy-mm-dd hh:ii',
+        language: 'zh-CN',
+        todayBtn: true,
+        today: true,
+        pickerPosition: "bottom-left"
+      });
+    });
+  </script>
+{% endblock %}

@@ -2,53 +2,112 @@
 
 {% import "bootstrap/wtf.html" as wtf %}
 
-{% block title %}Flasky{% endblock %}
-
 {% block page_content %}
   <div class="container">
     <div class="col-md-2">
       <h2>游戏图片</h2>
     </div>
 
-    <div class="well col-md-8">
-      <ul class="nav nav-pills">
+    <div class="col-md-8">
+      <ul class="nav nav-pills nav-justified">
         <li class="active"   id="nav_panel_1"><a href="#">基本信息</a></li>
-        <li role = "presentation" class="dropdown disabled" id="nav_panel_2">
-          <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="false">
-            奖项设置 <span class="caret"></span>
-          </a>
-          <ul class="dropdown-menu" role="menu">
-            <li><a href="#">分享设置</a></li>
-            <li><a href="#">素材替换</a></li>
-          </ul>
-        </li>
-        <li class="disabled" id="nav_panel_3"><a href="#">完成</a></li>
-      </ul>
+        <li class="disabled" id="nav_panel_2"><a href="#">奖项设置</a></li>
+        <li class="disabled" id="nav_panel_3"><a href="#">素材定制</a></li>
+        <li class="disabled" id="nav_panel_4"><a href="#">分享设置</a></li>
+        <li class="disabled" id="nav_panel_5"><a href="#">完  成</a></li>
+      </ul><br/>
 
-      <div class="view" id="panel_1">
-        <form method="post" class="form_1" role="form">
-          {{ form1.hidden_tag() }}
-          {{ wtf.form_errors(form1, hiddens="only") }}
-          {{ wtf.form_field(form1.name) }}
-          {{ wtf.form_field(form1.ts_start) }}
-          {{ wtf.form_field(form1.ts_end) }}
-          {{ wtf.form_field(form1.rule) }}
-          <a href="javascript:;" id="gotoStep2" type="button" class="btn btn-default">下一步</a>
-        </form>
-      </div>
+      <form class = "well form-horizontal" method="post" id="create_activity_form" role="form">
+        {{ form.hidden_tag() }}
+        {{ wtf.form_errors(form, hiddens="only") }}
 
-      <div class="view" id="panel_2" style="display: none;">
-        <form method="post" class="form_2" role="form">
-          {{ form2.hidden_tag() }}
-          {{ wtf.form_errors(form2, hiddens="only") }}
-          {{ wtf.form_field(form2.name) }}
-          {{ wtf.form_field(form2.count1) }}
-          {{ wtf.form_field(form2.count2) }}
-          {{ wtf.form_field(form2.count3) }}
-          <a href="javascript:;" id="gotoStep1" type="button" class="btn btn-default">上一步</a>
-          {{ wtf.form_field(form2.finish) }}
-        </form>
-      </div>
+        <!--基本信息start-->
+        <div class="view" id="panel_1">
+          <div class="form-group">
+            {{ form.name.label(class_="col-md-2 control-label") }}
+            <div class="col-md-4">{{ form.name(class_="form-control") }}</div>
+            <span id="helpBlock" class="help-block">{{ form.name.description }}</span>
+          </div>
+          <div class="form-group">
+            {{ form.ts_start.label(class_="col-md-2 control-label") }}
+            <div class="col-md-4">{{ form.ts_start(class_="form-control") }}</div>
+            <span id="helpBlock" class="help-block">{{ form.ts_start.description }}</span>
+          </div>
+          <div class="form-group">
+            {{ form.ts_end.label(class_="col-md-2 control-label") }}
+            <div class="col-md-4">{{ form.ts_end(class_="form-control") }}</div>
+            <span id="helpBlock" class="help-block">{{ form.ts_end.description }}</span>
+          </div>
+          <div class="form-group">
+            {{ form.rule.label(class_="col-md-2 control-label") }}
+            <div class="col-md-10">{{ form.rule(class_="form-control", rows="8") }}
+              <span id="helpBlock" class="help-block">{{ form.rule.description }}</span>
+            </div>
+          </div>
+          <div class="form-group">
+            {{ form.subs_link.label(class_="col-md-2 control-label") }}
+            <div class="col-md-10">
+              {{ form.subs_link(class_="form-control") }}
+              <span id="helpBlock" class="help-block">{{ form.subs_link.description }}</span>
+            </div>
+          </div>
+          <a href="javascript:;" id="next_step1" type="button" class="btn btn-default">下一步</a>
+        </div>
+
+        <!--奖项设置-->
+        <div class="view" id="panel_2" style="display: none;">
+          <div class="form-group">
+            <label class="col-md-4 control-label"></label>
+            <button type="button" class="btn btn-default" id="award_by_none" >无&nbsp;&nbsp;奖</button>
+            <button type="button" class="btn btn-default" id="award_by_rank" >按排名发奖</button>
+            <button type="button" class="btn btn-default" id="award_by_score">按分数发奖</button>
+          </div>
+
+          <div id="no_award_panel" style="display: none;">
+            <p>已设置为无奖</p><br/>
+          </div>
+
+          <div id="has_award_panel" style="display: none;">
+            <div class="form-group">
+              <label class="col-md-7 control-label"><strong>奖项设置</strong></label>
+            </div>
+            <div class="form-group">
+              <p class="col-md-2 form-control-static text-danger"></p>
+              <p class="col-md-4 form-control-static text-danger">奖项名称（不超50字）</p>
+              <p class="col-md-4 form-control-static text-danger">奖品（不超50字）</p>
+              <p class="col-md-2 form-control-static text-danger" id="prize_tip_count">奖品数量</p>
+            </div>
+
+            {% for i in range(8) %}
+              <div class="form-group">
+                <label class="col-md-2 control-label">奖项 {{ i + 1 }}</label>
+                <div class="col-md-4"><input type="text" class="form-control" id="prize{{ i }}_name"></div>
+                <div class="col-md-4"><input type="text" class="form-control" id="prize{{ i }}_item"></div>
+                <div class="col-md-2"><input type="number" class="form-control" id="prize{{ i }}_count"></div>
+              </div>
+            {% endfor %}
+          </div>
+
+          <a href="javascript:;" id="prev_step2" type="button" class="btn btn-default">上一步</a>
+          <a href="javascript:;" id="next_step2" type="button" class="btn btn-default">下一步</a>
+          <input class="btn btn-default" id="finish" name="finish" type="submit" value="完成">
+        </div>
+
+        <!--素材设置-->
+        <div class="view" id="panel_3" style="display: none;">
+          {{ wtf.form_field(form.img_demo) }}
+          <a href="javascript:;" id="prev_step3" type="button" class="btn btn-default">上一步</a>
+          <a href="javascript:;" id="next_step3" type="button" class="btn btn-default">下一步</a>
+          <input class="btn btn-default" id="finish" name="finish" type="submit" value="完成">
+        </div>
+
+        <!--分享设置-->
+        <div class="view" id="panel_4" style="display: none;">
+          {{ wtf.form_field(form.share_demo) }}
+          <a href="javascript:;" id="prev_step4" type="button" class="btn btn-default">上一步</a>
+          <input class="btn btn-default" id="finish" name="finish" type="submit" value="完成">
+        </div>
+      </form>
 
     </div>
   </div>
@@ -63,7 +122,7 @@
       var $p2 = $("#panel_"+panelId);
       if($p1.is($p2)) return;
 
-      for (var i=1; i<=3; i++){
+      for (var i=1; i<=5; i++){
         if (panelId === i) {
           $("#nav_panel_" + i).removeClass('disabled').addClass('active');
         } else {
@@ -76,13 +135,43 @@
     }
 
     $(document).ready(function(){
-      $("#gotoStep1").click(function(){
-        changeView(1);
-      });
-
-      $("#gotoStep2").click(function(){
+      $("#next_step1").click(function(){
         changeView(2);
       });
+      $("#prev_step2").click(function(){
+        changeView(1);
+      });
+      $("#next_step2").click(function(){
+        changeView(3);
+      });
+      $("#prev_step3").click(function(){
+        changeView(2);
+      });
+      $("#next_step3").click(function(){
+        changeView(4);
+      });
+      $("#prev_step4").click(function(){
+        changeView(3);
+      });
+
+      function buttonClick(index) {
+        console.log('buttonClick: index = ' + index);
+        if (index == 0){
+          $("#no_award_panel").show();
+          $("#has_award_panel").hide();
+        } else {
+          $("#no_award_panel").hide();
+          $("#has_award_panel").show();
+          if (index == 1) {
+            $("#prize_tip_count").text("奖品数量");
+          } else {
+            $("#prize_tip_count").text("兑奖分数");
+          }
+        }
+      }
+
+      initButtonGroup($("button[id^='award_by_']"), 0, buttonClick);
+      buttonClick(0);
     });
   </script>
 {% endblock %}

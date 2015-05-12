@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import os
 from app import create_app, db
+from app.main.forms import CreateActivityForm
 from app.models import User, Activity, Player, GameCase, GameProto, Award
 from flask.ext.script import Manager, Shell
 from flask.ext.migrate import Migrate, MigrateCommand
@@ -12,7 +13,8 @@ migrate = Migrate(app, db)
 
 def make_shell_context():
     return dict(app=app, db=db, User=User, Activity=Activity,
-                Player=Player, GameCase=GameCase, GameProto=GameProto, Award=Award)
+                Player=Player, GameCase=GameCase, GameProto=GameProto,
+                Award=Award, CreateActivityForm=CreateActivityForm)
 manager.add_command("shell", Shell(make_context=make_shell_context))
 manager.add_command('db', MigrateCommand)
 
