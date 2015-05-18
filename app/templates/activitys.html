@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block page_content %}
+  <table class="table table-striped">
+    <thead>
+    <tr>
+      <th>游戏名称</th>
+      <th>游戏时段</th>
+      <th>已发奖数量</th>
+      <th>操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+      {% for item in items %}
+        <td>{{ item.name }}</td>
+        <td>{{ item.ts_start }} ~ {{ item.ts_end }}</td>
+        <td>0</td>
+        <td>
+          <a id="op_stop_activity" href="javascript:;">停止</a> |
+          <a id="op_copy_link" href="javascript:;">链接</a> |
+          <a id="op_qrcode" href="javascript:;">二维码</a>
+        </td>
+      {% endfor %}
+    </tr>
+    </tbody>
+  </table>
+  {# 历史活动 #}
+{% endblock %}
+
+{% block scripts %}
+  {{ super() }}
+  <script type="text/javascript">
+    $(document).ready(function () {
+      $("#create1").click(function () {
+        window.location.assign("{{ url_for('main.create') }}")
+      });
+
+      $("#create2").click(function () {
+        window.location.assign("{{ url_for('main.create') }}")
+      });
+    });
+  </script>
+{% endblock %}

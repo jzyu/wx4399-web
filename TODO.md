@@ -58,3 +58,34 @@ WX4399 Design & Todo
   1) datetime picker
 6.各页面invalidator
 7.post返回，并在完成页面显示url和二维码  
+
+## .php转.python
+
+cantk.php
+
+-- request --
+GET /firefly0411B/cantk/js/cantk.php HTTP/1.1
+Host: 192.168.1.120
+Connection: keep-alive
+Cache-Control: max-age=0
+Accept: */*
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.101 Safari/537.36
+Referer: http://192.168.1.120/firefly0411B/index.html
+Accept-Encoding: gzip, deflate, sdch
+Accept-Language: zh-CN,zh;q=0.8,en;q=0.6,zh-TW;q=0.4
+Cookie: PHPSESSID=sshibp64v752ovqi5r269808i2
+
+-- response --
+HTTP/1.1 200 OK
+Date: Sun, 17 May 2015 13:38:43 GMT
+Server: Apache/2.4.9 (Win64) PHP/5.5.12
+X-Powered-By: PHP/5.5.12
+Vary: Accept-Encoding
+Expires: Sun, 17 May 2015 13:43:43 GMT
+Cache-Control: public, max-age=300
+Content-Encoding: gzip
+Keep-Alive: timeout=5, max=99
+Connection: Keep-Alive
+Transfer-Encoding: chunked
+Content-Type: application/x-javascript; charset=UTF-8
+

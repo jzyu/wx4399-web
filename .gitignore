@@ -44,3 +44,6 @@ env/
 # IDEA Project file
 .idea/
 *.iml
+
+# h5 games
+h5games

@@ -1,6 +1,10 @@
 {% extends "base.html" %}
-
 {% import "bootstrap/wtf.html" as wtf %}
+
+{% block head %}
+  {{ super() }}
+  <link rel="stylesheet" href="{{ url_for('static', filename="css/bootstrap-datetimepicker.css") }}">
+{% endblock %}
 
 {% block page_content %}
   <div class="container">
@@ -30,12 +34,17 @@
           </div>
           <div class="form-group">
             {{ form.ts_start.label(class_="col-md-2 control-label") }}
-            <div class="col-md-4">{{ form.ts_start(class_="form-control") }}</div>
+            <div class="col-md-3">
+              <!--时间日期选择器-->
+              <input class="form-control dt_picker" id="ts_start" size="16" type="text" value="2015-05-10 14:45" readonly>
+            </div>
             <span id="helpBlock" class="help-block">{{ form.ts_start.description }}</span>
           </div>
           <div class="form-group">
             {{ form.ts_end.label(class_="col-md-2 control-label") }}
-            <div class="col-md-4">{{ form.ts_end(class_="form-control") }}</div>
+            <div class="col-md-3">
+              <input class="form-control dt_picker" id="ts_end" size="16" type="text" value="2015-05-10 14:45" readonly>
+            </div>
             <span id="helpBlock" class="help-block">{{ form.ts_end.description }}</span>
           </div>
           <div class="form-group">
@@ -52,6 +61,7 @@
             </div>
           </div>
           <a href="javascript:;" id="next_step1" type="button" class="btn btn-default">下一步</a>
+          <input class="btn btn-default" id="finish" name="finish" type="submit" value="完成">
         </div>
 
         <!--奖项设置-->
@@ -116,6 +126,9 @@
 
 {% block scripts %}
   {{ super() }}
+  <script src="{{ url_for('static', filename='js/bootstrap-datetimepicker.js') }}" charset="UTF-8"></script>
+  <script src="{{ url_for('static', filename='js/bootstrap-datetimepicker.zh-CN.js') }}" charset="UTF-8"></script>
+
   <script type="text/javascript">
     function changeView(panelId){
       var $p1 = $(".view:visible");
@@ -172,6 +185,37 @@
 
       initButtonGroup($("button[id^='award_by_']"), 0, buttonClick);
       buttonClick(0);
+
+      $('.dt_picker').datetimepicker({
+        format: 'yyyy-mm-dd hh:ii',
+        language: 'zh-CN',
+        todayBtn: true,
+        today: true
+      });
+
+      $('#create_activity_form').bootstrapValidator({
+        feedbackIcons: {
+          valid: 'glyphicon glyphicon-ok',
+          invalid: 'glyphicon glyphicon-remove',
+          validating: 'glyphicon glyphicon-refresh'
+        },
+        fields: {
+          name: {
+            validators: {
+              notEmpty: {},
+              stringLength: {min: 1,max: 64}
+            }},
+          rule: {
+            validators: {
+              notEmpty: {},
+              stringLength: {min: 1,max: 300}
+            }},
+          subs_link: {
+            validators: {
+              uri:{}
+            }}
+        }
+      });
     });
   </script>
 {% endblock %}

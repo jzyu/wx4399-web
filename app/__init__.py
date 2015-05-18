@@ -1,3 +1,4 @@
+from app import gapi as gapi_blueprint
 from flask import Flask
 from flask.ext.bootstrap import Bootstrap
 from flask.ext.mail import Mail
@@ -31,6 +32,12 @@ def create_app(config_name):
 
     from .auth import auth as auth_blueprint
     app.register_blueprint(auth_blueprint, url_prefix='/auth')
+
+    from gapi import gapi as gapi_blueprint
+    app.register_blueprint(gapi_blueprint, url_prefix='/gapi')
+
+    from wxlogin import wx as wx_blueprint
+    app.register_blueprint(wx_blueprint, url_prefix='/wx')
 
     return app
 

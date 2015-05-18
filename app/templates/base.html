@@ -5,9 +5,15 @@
 {% block head %}
   {{ super() }}
   <link rel="stylesheet" href="{{ url_for('static', filename="css/sticky-footer.css") }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename="css/bootstrapValidator.css") }}">
   <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
   <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
 {% endblock %}
+
+{% set user_id = '' %}
+{% if current_user.is_authenticated() %}
+  {% set user_id = '?user=' + current_user.get_id() %}
+{% endif %}
 
 {% block navbar %}
   <div class="navbar navbar-inverse" role="navigation">
@@ -27,8 +33,7 @@
       <div class="navbar-collapse collapse">
         <ul class="nav navbar-nav">
           <li><a href="{{ url_for('main.index') }}">主站</a></li>
-          <li><a href="{{ url_for('main.index') }}">经典案例</a></li>
-          <li><a href="{{ url_for('main.index') }}">我的游戏</a></li>
+          <li><a href="{{ url_for('main.activitys') + user_id}}">我的游戏</a></li>
           <li><a href="{{ url_for('main.index') }}">兑奖管理</a></li>
         </ul>
         <ul class="nav navbar-nav navbar-right">
@@ -65,4 +70,6 @@
 {% block scripts %}
   {{ super() }}
   <script src="{{ url_for('static', filename='js/myutil.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/bootstrapValidator.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/bootstrapValidator.zh-CN.js') }}"></script>
 {% endblock %}

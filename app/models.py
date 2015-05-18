@@ -12,7 +12,34 @@ Activity 和 Player 是1对多关系
 GameProto 和 GameCase 是1对多关系
 """
 
+
 # -- util function --
+def test_new_activity():
+    proto_ff = GameProto(name='firefly', name_display=u'一起来抓萤火虫', desc={'rule': u'这是游戏规则', 'award': u'这是奖励信息'},
+                         share_fmt={'title': u'这是微信分享title', 'desc': u'这是微信分享desc'})
+    proto_cs = GameProto(name='catchstar', name_display=u'超模鉴定器', desc={'rule': u'这是游戏规则', 'award': u'这是奖励信息'},
+                         share_fmt={'title': u'这是微信分享title', 'desc': u'这是微信分享desc'})
+    proto_ff.save()
+    proto_cs.save()
+
+    user_a = User('corp-apple', 'apple@email.com', 'apple')
+    user_b = User('corp-boy', 'boy@email.com', 'boy')
+    user_a.save()
+    user_b.save()
+
+    case = GameCase(proto_ff)
+    case.save()
+
+    items = [
+        {'name': u'捕虫新手', 'value': 50},
+        {'name': u'捕虫能手', 'value': 80},
+        {'name': u'捕虫高手', 'value': 100}
+    ]
+    award = Award(award_type=2, items=items)
+    award.save()
+
+    act = Activity(u'apple抓萤火虫活动', user_a, case, award)
+    act.save()
 
 
 # cmbstr: '60|80|100|'
@@ -41,7 +68,7 @@ class Activity(db.Model):
         外键：user_id(1:M), case_id(1:1), award_id(1:1)，
         其他：
             name 活动名称
-            status 活动状态 (0停止，1进行中，2已过期)
+            status 活动状态 (0停止，1进行中)
             ts_start, ts_end 时段：开始时间，结束时间
             nr_player, nr_viewer 统计信息：参与数量(有游戏成绩的player)、传播数量(打开过链接的player)
     """
@@ -62,7 +89,7 @@ class Activity(db.Model):
     award_id = db.Column(db.Integer, db.ForeignKey('award.id'), unique=True, nullable=False)
     award = db.relationship('Award', backref=db.backref('activity', uselist=False, lazy='noload'))
 
-    def __init__(self, user, game_case, award, name, ts_start=None, ts_end=None):
+    def __init__(self, name, user, game_case, award, ts_start=None, ts_end=None):
         self.name = name
         self.user = user
         self.game_case = game_case
@@ -73,6 +100,7 @@ class Activity(db.Model):
             ts_end = ts_start + timedelta(days=30)
         self.ts_start = ts_start
         self.ts_end = ts_end
+        self.status = 1
 
     def __repr__(self):
         return "<Activity %r>" % self.name
@@ -130,7 +158,7 @@ class GameCase(db.Model):
          day_play_nr 一天最多可以玩多少次(-1表示不限制)
          help_favor_type   助力受益类型：0=无，1=增加每日可玩次数
          help_favor_value  助力受益值
-         share_favor_type  分享受益类型：0=无，1=增加奖品数量，2=增加游戏分数
+         share_favor_type  分享受益类型：0=无，1=增加当日游戏次数，2=增加奖品数量，3=增加游戏分数
          share_favor_value 分享受益值
          share_title_fmt share_desc_fmt 微信分享标题和描述的格式
     """
@@ -182,24 +210,27 @@ class GameCase(db.Model):
 class GameProto(db.Model):
     """ 游戏原型 - 包含：1.游戏可定制的素材和规则 2.游戏实例的默认值
     主键：id,
-    其他：name,
+    其他：name: 游戏内部唯一名称
+        name_display: 游戏外部显示的名称
         desc_rule, desc_award, 文本描述：游戏规则、奖励信息
         share_title_fmt share_desc_fmt 微信分享标题和描述的格式
         #todo: add 游戏可定制的素材
     """
     id = db.Column(db.Integer, primary_key=True, unique=True, autoincrement=True)
-    name = db.Column(db.String(128))
+    name = db.Column(db.String(128), unique=True)
+    name_display = db.Column(db.String(128))
     desc_rule = db.Column(db.String(2048))
     desc_award = db.Column(db.String(2048))
     share_title_fmt = db.Column(db.String(256))
     share_desc_fmt = db.Column(db.String(256))
 
-    def __init__(self, name, desc=None, share_fmt=None):
+    def __init__(self, name, name_display, desc=None, share_fmt=None):
         if desc is None:
             desc = {'rule': '', 'award': ''}
         if share_fmt is None:
             share_fmt = {'title': '', 'desc': ''}
         self.name = name
+        self.name_display = name_display
         self.desc_award = desc['award']
         self.desc_rule = desc['rule']
         self.share_title_fmt = share_fmt['title']
@@ -271,30 +302,31 @@ class Award(db.Model):
     主键：id,
     外键：activity_id(1:1)
     其他：
-        setting_type 奖励设置：
+        award_type 奖励类型：
             0 - 无奖，
             1 - 按排名发奖，     award_value 保存2个值：达标分数线 | 奖项个数
             2 - 按分数级别发奖， award_value 保存n个值，n=奖项数
-        award_values 奖励的数值，保存形如: 60|80|100
-        award_names  各级奖励的奖品，保存形式：iphon6P | Apple Watch | 小米手环
+        item_values 奖励的数值，保存形如: 60|80|100
+        item_names  各级奖励的奖品，保存形式：iphon6P | Apple Watch | 小米手环
         title_values 各级称号的分值，保存形式：0|20|40|60|80|100
         title_names  各级称号的名称，保存形式：获得“捕虫新手”称号|获得“捕虫新星”称号|获得“捕虫达人”称号
     """
 
     id = db.Column(db.Integer, primary_key=True, unique=True, autoincrement=True)
-    award_type = db.Column(db.SMALLINT)
-    award_values = db.Column(db.String(2048))
-    award_names = db.Column(db.String(2048))
+    type = db.Column(db.SMALLINT)
+    item_values = db.Column(db.String(2048))
+    item_names = db.Column(db.String(2048))
     title_values = db.Column(db.String(2048))
     title_names = db.Column(db.String(2048))
 
-    def __init__(self, awards=None, titles=None):
-        if awards is None:
-            awards = [{'value': 0, 'name': ''}]
+    def __init__(self, award_type=0, items=None, titles=None):
+        if items is None:
+            items = [{'value': 0, 'name': ''}]
         if titles is None:
             titles = [{'value': 0, 'name': ''}]
-        self.award_values = cmbstr_make_from_keys(awards, 'value', '|')
-        self.award_names = cmbstr_make_from_keys(awards, 'name', '|')
+        self.award_type = award_type
+        self.item_values = cmbstr_make_from_keys(items, 'value', '|')
+        self.item_names = cmbstr_make_from_keys(items, 'name', '|')
         self.title_values = cmbstr_make_from_keys(titles, 'value', '|')
         self.title_names = cmbstr_make_from_keys(titles, 'name', '|')
 
@@ -305,14 +337,14 @@ class Award(db.Model):
         db.session.add(self)
         db.session.commit()
 
-    def get_award_nr(self):
-        return cmbstr_get_item_nr(self.award_values, '|')
+    def get_item_nr(self):
+        return cmbstr_get_item_nr(self.item_values, '|')
 
     def get_title_nr(self):
         return cmbstr_get_item_nr(self.title_values, '|')
 
-    def get_award_name(self, i):
-        return cmbstr_get_item(self.award_names, i, '|')
+    def get_item_name(self, i):
+        return cmbstr_get_item(self.item_names, i, '|')
 
     def get_title_name(self, i):
         return cmbstr_get_item(self.title_names, i, '|')
